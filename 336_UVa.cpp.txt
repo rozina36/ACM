@@ -1,0 +1,157 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int N;
+int graph[31][31];
+int startNode, TTL;
+int number[31],count;
+int Q[32], font, rear,used[32],dp[32];
+
+void initpath()
+{
+	for (int i = 0; i < 30; i++)
+	{
+		for (int j = 0; j < 30; j++)
+		{
+			graph[i][j] = 0;
+		}
+	}
+		
+}
+int size;
+
+int  search(int x )
+{
+	for (int i = 0; i < size; i++)
+	{
+		if (x == number[i])
+			return i;
+	}
+
+	return -1;
+}
+
+void push(int x)
+{
+	
+	Q[rear] = x;
+	rear++;
+}
+
+int pop()
+{
+	font++;
+	return Q[font - 1];
+}
+
+int  isEmpty()
+{
+	if (font >= rear)
+		return 1;
+
+	return 0;
+}
+
+void initQueue()
+{
+	rear = 0;
+	font = 0;
+}
+
+void initUsed()
+{
+	for (int i = 0; i < size; i++)
+		used[i] = 0;
+}
+
+void initDP()
+{
+	for (int i = 0; i < size; i++)
+		dp[i] = 0;
+}
+
+void solveCase()
+{
+	int x, i;
+	count = 0;
+	x = search(startNode);
+	if (x == -1){
+		count = 0;
+		return;
+	}
+	push(x);
+	used[x] = 1;
+	dp[x] = 0;
+	
+	while (!isEmpty())
+	{
+		x = pop(); //Q[font];
+		if (dp[x] > TTL)
+			break;
+		count++;
+		//pop ;
+		for (i = 0; i < size; i++)
+		{
+			if (!used[i] && graph[x][i])
+			{
+				used[i] = 1;
+				dp[i] = dp[x] + 1;
+				push(i);
+			}
+		}
+	}
+
+}
+
+void readCase( )
+{
+	int pos1, pos2, X , Y;
+	size = 0;
+	while (N--)
+	{
+		scanf("%d %d", &X, &Y);
+
+		pos1 = search(X);
+		if (pos1 == -1){
+			pos1 = size;
+			number[size++] = X;
+		}
+
+		pos2 = search(Y);
+		if (pos2 == -1){
+			pos2 = size;
+			number[size++] = Y;
+
+		}
+
+			graph[pos1][pos2] = 1;
+			graph[pos2][pos1] = 1;
+		}
+	
+	
+}
+int main()
+{
+
+	freopen("input.txt", "r", stdin);
+	freopen("output.txt", "w", stdout);
+
+	int kase = 0;
+	while (scanf("%d", &N) && N){
+		initpath();
+		readCase();
+		while (scanf("%d%d", &startNode, &TTL) == 2)
+		{
+			if (startNode == 0 && TTL == 0)
+				break;
+			//initDP();
+			initQueue();
+			initUsed();
+			solveCase();
+			kase++;
+			printf("Case %d: %d nodes not reachable from node %d with TTL = %d.\n", kase,size-count, startNode,TTL);
+		}
+	}
+	//system("PAUSE");
+	return 0;
+}
