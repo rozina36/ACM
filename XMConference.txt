@@ -1,0 +1,93 @@
+
+
+#include <stdio.h>
+#define SIZE 15
+int Case;
+int N, StartH[SIZE], StartM[SIZE], EndH[SIZE], EndM[SIZE];
+int Output[SIZE], Visited[SIZE];
+int Max;
+
+
+void initCase(){
+    int i;
+    for (i = 0; i < SIZE; i++)
+        Visited[i] = 0;
+}
+
+void readCase(){
+    scanf("%d", &N);
+    int i, j;
+    for (i = 0; i < N; i++){
+        scanf("%d %d %d %d", &StartH[i], &StartM[i], &EndH[i], &EndM[i]);
+    }
+
+}
+
+int calculatePoint(int index){
+    return (EndH[index] * 60 + EndM[index]) - (StartH[index] * 60 + StartM[index]);
+    /*int endHour = EndH[index] - StartH[index];
+    return (endHour * 60) + (EndM[index] - StartM[index]);*/
+}
+//#define DEBUG
+void printOutput(int level, int total){
+#ifdef DEBUG
+
+    int i;
+    for (i = 0; i < level; i++)
+        printf("%d ", Output[i]);
+    printf("\n%d\n", total);
+    printf("------\n");
+    printf("\n");
+#endif // DEBUG
+}
+
+void solve(int end1, int end2, int totalPoint, int level){
+    int i;
+    if (level == N){
+        return;
+    }
+    if (totalPoint > Max){
+        printOutput(level, totalPoint);
+        Max = totalPoint;
+    }
+
+    for (i = 0; i < N; i++){
+        if (!Visited[i]){
+            if (end1 < StartH[i] * 60 + StartM[i]){
+                Visited[i] = 1;
+                Output[level] = i;
+                solve(EndH[i] * 60 + EndM[i], end2, totalPoint + calculatePoint(i), level + 1);
+                Visited[i] = 0;
+            }
+            else if (end2 <= StartH[i] * 60 + StartM[i]){
+                Visited[i] = 1;
+                Output[level] = i;
+                solve(end1, EndH[i] * 60 + EndM[i], totalPoint + calculatePoint(i), level + 1);
+                Visited[i] = 0;
+            }
+        }
+    }
+}
+
+void solveCase(){
+    Max = 0;
+    solve(0, 0, 0, 0);
+}
+
+void printCase(){
+    printf("#%d %d\n", Case, Max);
+}
+
+int main(){
+    freopen("input.txt", "r", stdin);
+    int T;
+    scanf("%d", &T);
+    for (Case = 1; Case <= T; Case++){
+        readCase();
+        solveCase();
+        printCase();
+        initCase();
+    }
+    return 0;
+}
+
